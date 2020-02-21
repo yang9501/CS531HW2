@@ -10,9 +10,20 @@ G01135050
 #include <stdlib.h>
 
 struct listNode {
-	char name[10];
+	char alias[10];
 	int octet1, octet2, octet3, octet4;
+	struct listNode *next;
 };
+
+struct listNode * head = NULL;
+struct listNode * curr = NULL;
+
+//THIS FUNCTION DOES NOT CHECK INPUT FORMAT CORRECTNESS.  DO THAT BEFORE CALLING THIS FUNCTION
+struct listNode* listNodeFactory(char* address, char* alias) {
+	struct listNode *newNode = (struct listNode*) malloc(sizeof(struct listNode));
+	sscanf(address, "%d.%d.%d.%d", &(newNode -> octet1), &(newNode -> octet2), &(newNode -> octet3), &(newNode -> octet4));
+	strcpy(newNode -> alias, alias);
+}
 
 void displayMenu() {
 	printf("Select menu option: \n");
@@ -25,8 +36,49 @@ void displayMenu() {
 	printf("7) Save to file\n");
 	printf("8) Quit\n");
 }
+/*
+void parseAddressFile() {
+	FILE *fp = fopen("531_Inet.txt", "r");;
+	char str[100];
+	char 
+	//Read line-by-line
+	while(fgets(str, 100, fp) != NULL) {
+		sscanf(line, "%s %s", , );
+	}
+}
+*/
+void lookUpAddress(char alias[10]) {
+
+}
+
+void addAddress() {
+	//use lookUpAddress() to check node duplicity
+}
+
+void updateAddress() {
+
+}
+
+void deleteAddress() {
+
+}
+
+void displayList() {
+
+}
+
+void displayAddresses() {
+
+}
+
+void saveToFile() {
+
+}
+
+//ASSUME THE DATA FILE HAS NO DUPLICATES
 
 int main() {
+
 	char menuInputBuffer[2];
 
 	while(true) {
@@ -76,8 +128,6 @@ int main() {
 				printf("Enter a number that corresponds to the menu option.\n");
 				continue;
 		}
-
-
 	}
 
 	return 0;
