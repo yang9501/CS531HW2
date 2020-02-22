@@ -10,7 +10,7 @@ G01135050
 #include <stdlib.h>
 
 struct listNode {
-	char alias[10];
+	char alias[11];
 	int octet1, octet2, octet3, octet4;
 	struct listNode *next;
 };
@@ -36,17 +36,24 @@ void displayMenu() {
 	printf("7) Save to file\n");
 	printf("8) Quit\n");
 }
-/*
+
 void parseAddressFile() {
-	FILE *fp = fopen("531_Inet.txt", "r");;
-	char str[100];
-	char 
+	printf("sup\n");
+	FILE *fp = fopen("CS531_Inet.txt", "r");
+	printf("hi\n");
+	char lineBuffer[100];
+	char addressBuffer[20];
+	char aliasBuffer[11];
+
 	//Read line-by-line
-	while(fgets(str, 100, fp) != NULL) {
-		sscanf(line, "%s %s", , );
+	printf("hello\n");
+	while(fgets(lineBuffer, 100, fp) != NULL) {
+		printf("testing: %s\n", lineBuffer);
+		sscanf(lineBuffer, "%s %s", addressBuffer, aliasBuffer);
+		printf("%s\n", aliasBuffer);
 	}
 }
-*/
+
 void lookUpAddress(char alias[10]) {
 
 }
@@ -80,6 +87,8 @@ void saveToFile() {
 int main() {
 
 	char menuInputBuffer[2];
+
+	parseAddressFile();
 
 	while(true) {
 		displayMenu();
