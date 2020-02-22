@@ -172,8 +172,29 @@ void displayAddresses() {
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!PROMPT USER FOR A FILENAME
 void saveToFile() {
 	FILE *fptr;
-	fptr = fopen("CS531_Inet2.txt", "w+");
-	//PROMPT USER FOR A FILENAME
+	char nameBuffer[101];
+	
+	//Prompt user for filename, check for illegal characters
+	while(true) {	
+		printf("Enter the filename to save: \n");
+		fgets(nameBuffer, 11, stdin);
+
+		//Fgets input formatting check
+		if(strlen(nameBuffer) < 2 || strlen(nameBuffer) > 97 || strchr(nameBuffer, '\n') == NULL || strchr(nameBuffer, '/') != NULL) {
+			printf("Enter a valid filename.\n");
+			if(strchr(nameBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else {
+			break;
+		}
+	}
+
+	//Write to file
+	fptr = fopen(strncat(nameBuffer, ".txt", 4), "w+");
 	struct addressListNode* curr = head;
 	
 	while(curr -> next != NULL) {
