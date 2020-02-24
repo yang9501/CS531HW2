@@ -65,8 +65,13 @@ void parseAddressFile() {
 	}
 }
 
-void lookUpAddress() {
+struct addressListNode *searchForAndReturnAddress() {
 
+}
+
+void lookUpAddress() {
+	//STUBBED
+	struct addressListNode * node = searchForAndReturnAddress;
 }
 
 void addAddress() {
