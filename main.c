@@ -9,20 +9,22 @@ G01135050
 #include <stdbool.h>
 #include <stdlib.h>
 
-struct listNode {
+struct addressListNode {
 	char alias[11];
 	int octet1, octet2, octet3, octet4;
-	struct listNode *next;
+	struct addressListNode *next;
 };
 
-struct listNode * head = NULL;
-struct listNode * curr = NULL;
+struct addressListNode * head;
+struct addressListNode * tail;
 
 //THIS FUNCTION DOES NOT CHECK INPUT FORMAT CORRECTNESS.  DO THAT BEFORE CALLING THIS FUNCTION
-struct listNode* listNodeFactory(char* address, char* alias) {
-	struct listNode *newNode = (struct listNode*) malloc(sizeof(struct listNode));
+struct addressListNode* addressListNodeConstructor(char* address, char* alias) {
+	struct addressListNode *newNode = (struct addressListNode*) malloc(sizeof(struct addressListNode));
 	sscanf(address, "%d.%d.%d.%d", &(newNode -> octet1), &(newNode -> octet2), &(newNode -> octet3), &(newNode -> octet4));
 	strcpy(newNode -> alias, alias);
+	newNode -> next = NULL;
+	return newNode;
 }
 
 void displayMenu() {
@@ -38,23 +40,32 @@ void displayMenu() {
 }
 
 void parseAddressFile() {
-	printf("sup\n");
-	FILE *fp = fopen("CS531_Inet.txt", "r");
-	printf("hi\n");
 	char lineBuffer[100];
 	char addressBuffer[20];
 	char aliasBuffer[11];
+	bool firstNode = true;
+
+	FILE *fp = fopen("CS531_Inet.txt", "r");
 
 	//Read line-by-line
-	printf("hello\n");
 	while(fgets(lineBuffer, 100, fp) != NULL) {
-		printf("testing: %s\n", lineBuffer);
 		sscanf(lineBuffer, "%s %s", addressBuffer, aliasBuffer);
-		printf("%s\n", aliasBuffer);
+		struct addressListNode * newNode = addressListNodeConstructor(addressBuffer, aliasBuffer);
+		printf("%s\n", newNode -> alias);
+		if(firstNode == true) {
+			head = newNode;
+			tail = newNode;
+
+			firstNode = false;
+		}
+		else {
+			tail -> next = newNode;
+			tail = newNode;
+		}
 	}
 }
 
-void lookUpAddress(char alias[10]) {
+void lookUpAddress() {
 
 }
 
@@ -71,7 +82,13 @@ void deleteAddress() {
 }
 
 void displayList() {
-
+	struct addressListNode* curr = head;
+	
+	while(curr -> next != NULL) {
+		printf("Alias: %s, Address: %d.%d.%d.%d\n", curr -> alias, curr -> octet1, curr -> octet2, curr -> octet3, curr -> octet4);
+		curr = curr -> next;
+	}
+	printf("Alias: %s, Address: %d.%d.%d.%d\n", curr -> alias, curr -> octet1, curr -> octet2, curr -> octet3, curr -> octet4);
 }
 
 void displayAddresses() {
@@ -82,10 +99,23 @@ void saveToFile() {
 
 }
 
+void memoryCleanup() {
+	struct addressListNode* curr = head;
+	struct addressListNode* toDelete;
+
+	printf("Freeing memory.\n");
+
+	while(curr -> next != NULL) {
+		toDelete = curr;
+		curr = curr -> next;
+		free(toDelete);
+	}
+	free(tail);
+}
+
 //ASSUME THE DATA FILE HAS NO DUPLICATES
 
 int main() {
-
 	char menuInputBuffer[2];
 
 	parseAddressFile();
@@ -95,7 +125,7 @@ int main() {
 
 		fgets(menuInputBuffer, 2*sizeof(menuInputBuffer), stdin);
 
-		//Fgets fuckery
+		//Fgets input fuckery
 		if(strlen(menuInputBuffer) != 2 || strchr(menuInputBuffer, '\n') == NULL) {
 			printf("Enter a number that corresponds to the menu option.\n");
 			if(strchr(menuInputBuffer, '\n') == NULL) {
@@ -122,7 +152,7 @@ int main() {
 				printf("4 lol\n");
 				break;
 			case 5:
-				printf("5 lol\n");
+				displayList();
 				break;
 			case 6:
 				printf("6 lol\n");
@@ -131,7 +161,7 @@ int main() {
 				printf("7 lol\n");
 				break;
 			case 8:
-				printf("8 lol\n");
+				memoryCleanup();
 				return 0;
 			default: 
 				printf("Enter a number that corresponds to the menu option.\n");
