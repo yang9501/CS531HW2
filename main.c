@@ -18,7 +18,7 @@ struct addressListNode {
 struct addressListNode * head;
 struct addressListNode * tail;
 
-//THIS FUNCTION DOES NOT CHECK INPUT FORMAT CORRECTNESS.  DO THAT BEFORE CALLING THIS FUNCTION
+//given address and alias, returns reference to AddressListNode object
 struct addressListNode* addressListNodeConstructor(char* address, char* alias) {
 	struct addressListNode *newNode = (struct addressListNode*) malloc(sizeof(struct addressListNode));
 	sscanf(address, "%d.%d.%d.%d", &(newNode -> octet1), &(newNode -> octet2), &(newNode -> octet3), &(newNode -> octet4));
@@ -39,6 +39,7 @@ void displayMenu() {
 	printf("8) Quit\n");
 }
 
+//Opens text file and parses into AddressList
 void parseAddressFile() {
 	char lineBuffer[100];
 	char addressBuffer[20];
@@ -65,18 +66,85 @@ void parseAddressFile() {
 	}
 }
 
-struct addressListNode *searchForAndReturnAddress() {
+//Returns reference to a node with a specified alias if it exists, returns null otherwise
+struct addressListNode *searchForAndReturnNodeAlias(char* alias) {
+	struct addressListNode* curr = head;
+	
+	while(curr -> next != NULL) {
+		if(strcmp(curr -> alias, alias) == 0) {
+			return curr;
+		}
+		curr = curr -> next;
+	}
 
+	if(strcmp(curr -> alias, alias) == 0) {
+		return curr;
+	}
+	return NULL;
 }
 
+//Returns reference to a node with a specified address if it exists, returns null otherwise
+struct addressListNode *searchForAndReturnNodeAddress(int octet1, int octet2, int octet3, int octet4) {
+	struct addressListNode* curr = head;
+	
+	while(curr -> next != NULL) {
+		if((curr -> octet1 == octet1) && (curr -> octet2 == octet2) && (curr -> octet3 == octet3) && (curr -> octet4 == octet4)) {
+			return curr;
+		}
+		curr = curr -> next;
+	}
+
+	if((curr -> octet1 == octet1) && (curr -> octet2 == octet2) && (curr -> octet3 == octet3) && (curr -> octet4 == octet4)) {
+		return curr;
+	}
+	return NULL;
+}
+
+//Retreives user inputted alias and displays address if it exists in the list
 void lookUpAddress() {
-	//STUBBED
-	struct addressListNode * node = searchForAndReturnAddress;
+	char aliasBuffer[11];
+
+	while(true) {
+		printf("Enter the alias for lookup: \n");
+		fgets(aliasBuffer, 11, stdin);
+
+		//Fgets input formatting check
+		if(strlen(aliasBuffer) < 2 || strlen(aliasBuffer) > 11 || strchr(aliasBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds to the menu option.\n");
+			if(strchr(aliasBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else {
+			break;
+		}
+	}
+	struct addressListNode * node = searchForAndReturnNodeAlias(strtok(aliasBuffer,"\n"));
+	if (node != NULL) {
+		printf("Address of alias %s is: %d.%d.%d.%d\n", node -> alias, node -> octet1, node -> octet2, node -> octet3, node -> octet4);
+
+	}
+	else {
+		printf("Alias not found.\n");
+	}
 }
 
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TODO: Get user input
 void addAddress() {
-	//use lookUpAddress() to check node duplicity
+	struct addressListNode* node1 = searchForAndReturnNodeAlias("jet2");
+	struct addressListNode* node2 = searchForAndReturnNodeAddress(131,251,95,221);
+	if(node1 == NULL && node2 == NULL) {
+		struct addressListNode* newNode = addressListNodeConstructor("111.111.111.111", "test");
+		newNode -> next = head;
+		head = newNode;
+	}
+	else {
+		printf("Value already exists within address list.\n");
+	}
 }
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 void updateAddress() {
 
@@ -86,6 +154,7 @@ void deleteAddress() {
 
 }
 
+//Prints list
 void displayList() {
 	struct addressListNode* curr = head;
 	
@@ -100,10 +169,23 @@ void displayAddresses() {
 
 }
 
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!PROMPT USER FOR A FILENAME
 void saveToFile() {
-
+	FILE *fptr;
+	fptr = fopen("CS531_Inet2.txt", "w+");
+	//PROMPT USER FOR A FILENAME
+	struct addressListNode* curr = head;
+	
+	while(curr -> next != NULL) {
+		fprintf(fptr, "%d.%d.%d.%d %s\n", curr -> octet1, curr -> octet2, curr -> octet3, curr -> octet4, curr -> alias);
+		curr = curr -> next;
+	}
+	fprintf(fptr, "%d.%d.%d.%d %s\n", curr -> octet1, curr -> octet2, curr -> octet3, curr -> octet4, curr -> alias);
+	fclose(fptr);
 }
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+//Frees memory
 void memoryCleanup() {
 	struct addressListNode* curr = head;
 	struct addressListNode* toDelete;
@@ -118,8 +200,6 @@ void memoryCleanup() {
 	free(tail);
 }
 
-//ASSUME THE DATA FILE HAS NO DUPLICATES
-
 int main() {
 	char menuInputBuffer[2];
 
@@ -130,7 +210,7 @@ int main() {
 
 		fgets(menuInputBuffer, 2*sizeof(menuInputBuffer), stdin);
 
-		//Fgets input fuckery
+		//Fgets input formatting check
 		if(strlen(menuInputBuffer) != 2 || strchr(menuInputBuffer, '\n') == NULL) {
 			printf("Enter a number that corresponds to the menu option.\n");
 			if(strchr(menuInputBuffer, '\n') == NULL) {
@@ -140,15 +220,15 @@ int main() {
 			continue;
 		}
 
+		//Convert string to int 
 		int menuInput = atoi(menuInputBuffer);
 
-		printf("menuInput = %d\n", menuInput);
 		switch(menuInput) {
 			case 1:
-				printf("1 lol\n");
+				addAddress();
 				break;
 			case 2:
-				printf("2 lol\n");
+				lookUpAddress();
 				break;
 			case 3:
 				printf("3 lol\n");
@@ -163,7 +243,7 @@ int main() {
 				printf("6 lol\n");
 				break;
 			case 7:
-				printf("7 lol\n");
+				saveToFile();
 				break;
 			case 8:
 				memoryCleanup();
