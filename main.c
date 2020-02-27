@@ -8,6 +8,7 @@ G01135050
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <regex.h>
 
 struct addressListNode {
 	char alias[11];
@@ -110,7 +111,7 @@ void lookUpAddress() {
 
 		//Fgets input formatting check
 		if(strlen(aliasBuffer) < 2 || strlen(aliasBuffer) > 11 || strchr(aliasBuffer, '\n') == NULL) {
-			printf("Enter a number that corresponds to the menu option.\n");
+			printf("Enter a string that corresponds to the format.\n");
 			if(strchr(aliasBuffer, '\n') == NULL) {
 				int c;
 				while((c = fgetc(stdin)) != '\n' && c != EOF);
@@ -131,8 +132,54 @@ void lookUpAddress() {
 	}
 }
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TODO: Get user input
+//THIS ONES FUCKED UP, NEED TO IMPLEMENT REGEX CHECK
 void addAddress() {
+	char aliasBuffer[11];
+	char addressBuffer[16];
+	regex_t regex;
+	int reti;
+
+	reti = regcomp(&regex, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", 0);
+
+	//Get alias
+	while(true) {
+		printf("Enter the alias for lookup: \n");
+		fgets(aliasBuffer, 11, stdin);
+
+		//Fgets input formatting check
+		if(strlen(aliasBuffer) < 2 || strlen(aliasBuffer) > 11 || strchr(aliasBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds to the menu option.\n");
+			if(strchr(aliasBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else {
+			break;
+		}
+	}
+
+	while(true) {
+		printf("Enter the address for lookup: \n");
+		fgets(addressBuffer, 16, stdin);
+
+		//Fgets input formatting check
+		reti = regexec(&regex, addressBuffer, 0, NULL, 0);
+		if(reti == REG_NOMATCH || strlen(addressBuffer) < 2 || strlen(addressBuffer) > 11 || strchr(addressBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds the address format.\n");
+			if(strchr(addressBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else {
+			break;
+		}
+	}
+		//sscanf(lineBuffer, "%s %s", addressBuffer, aliasBuffer);
+
 	struct addressListNode* node1 = searchForAndReturnNodeAlias("jet2");
 	struct addressListNode* node2 = searchForAndReturnNodeAddress(131,251,95,221);
 	if(node1 == NULL && node2 == NULL) {
@@ -146,8 +193,29 @@ void addAddress() {
 }
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+//THIS ONES FUCKED UP, REGEX AND GET NODE BEFORE ALIAS NODE FOR 'NEXT' POINTER MANIPULATION
 void updateAddress() {
+	char aliasBuffer[11];
 
+	while(true) {
+		printf("Enter the alias for lookup: \n");
+		fgets(aliasBuffer, 11, stdin);
+
+		//Fgets input formatting check
+		if(strlen(aliasBuffer) < 2 || strlen(aliasBuffer) > 11 || strchr(aliasBuffer, '\n') == NULL) {
+			printf("Enter a string that corresponds to the format.\n");
+			if(strchr(aliasBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else {
+			break;
+		}
+	}
+
+	searchForAndReturnNodeAlias(strtok(aliasBuffer,"\n"));
 }
 
 void deleteAddress() {
@@ -165,11 +233,57 @@ void displayList() {
 	printf("Alias: %s, Address: %d.%d.%d.%d\n", curr -> alias, curr -> octet1, curr -> octet2, curr -> octet3, curr -> octet4);
 }
 
+//FUCKED Up
 void displayAddresses() {
+	char octetBuffer[4];
+	int octet1;
+	int octet2;
+
+	while(true) {
+		printf("Enter the first octet: \n");
+		fgets(octetBuffer, 4, stdin);
+
+		//Fgets input formatting check
+		if(strlen(octetBuffer) < 2 || strlen(octetBuffer) > 4 || strchr(octetBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds to the format.\n");
+			if(strchr(octetBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else {
+			octet1 = atoi(strtok(octetBuffer,"\n"));
+			break;
+		}
+	}
+
+	while(true) {
+		printf("Enter the second octet: \n");
+		fgets(octetBuffer, 4, stdin);
+
+		//Fgets input formatting check
+		if(strlen(octetBuffer) < 2 || strlen(octetBuffer) > 4 || strchr(octetBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds to the format.\n");
+			if(strchr(octetBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else if(atoi(strtok(octetBuffer,"\n")) > 255 || atoi(strtok(octetBuffer,"\n")) < 0) {
+			continue;
+		}
+		else {
+			octet2 = atoi(strtok(octetBuffer,"\n"));
+			break;
+		}
+	}
+
 
 }
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!PROMPT USER FOR A FILENAME
+//Save list items to text file
 void saveToFile() {
 	FILE *fptr;
 	char nameBuffer[101];
@@ -194,7 +308,7 @@ void saveToFile() {
 	}
 
 	//Write to file
-	fptr = fopen(strncat(nameBuffer, ".txt", 4), "w+");
+	fptr = fopen(strncat(strtok(nameBuffer, "\n"), ".txt", 4), "w+");
 	struct addressListNode* curr = head;
 	
 	while(curr -> next != NULL) {
@@ -204,7 +318,6 @@ void saveToFile() {
 	fprintf(fptr, "%d.%d.%d.%d %s\n", curr -> octet1, curr -> octet2, curr -> octet3, curr -> octet4, curr -> alias);
 	fclose(fptr);
 }
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 //Frees memory
 void memoryCleanup() {
@@ -261,7 +374,7 @@ int main() {
 				displayList();
 				break;
 			case 6:
-				printf("6 lol\n");
+				displayAddresses();
 				break;
 			case 7:
 				saveToFile();
