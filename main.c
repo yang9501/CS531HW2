@@ -30,13 +30,13 @@ struct addressListNode* addressListNodeConstructor(char* address, char* alias) {
 
 void displayMenu() {
 	printf("Select menu option: \n");
-	printf("1) Add Address\n");
-	printf("2) Look up Address\n");
-	printf("3) Update Address\n");
-	printf("4) Delete Address\n");
-	printf("5) Display list\n");
-	printf("6) Display addresses for location\n");
-	printf("7) Save to file\n");
+	printf("1) Add Address TODO\n"); 
+	printf("2) Look up Address DONE\n");
+	printf("3) Update Address TODO\n");
+	printf("4) Delete Address TODO\n");
+	printf("5) Display list DONE\n");
+	printf("6) Display addresses for location DONE\n");
+	printf("7) Save to file DONE\n");
 	printf("8) Quit\n");
 }
 
@@ -160,6 +160,7 @@ void addAddress() {
 		}
 	}
 
+	//Get address,  USE DISPLAY ADDRESSES TO GRAB OCTETS
 	while(true) {
 		printf("Enter the address for lookup: \n");
 		fgets(addressBuffer, 16, stdin);
@@ -193,8 +194,9 @@ void addAddress() {
 }
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-//THIS ONES FUCKED UP, REGEX AND GET NODE BEFORE ALIAS NODE FOR 'NEXT' POINTER MANIPULATION
+//THIS ONES FUCKED UP,  
 void updateAddress() {
+	struct addressListNode* node;
 	char aliasBuffer[11];
 
 	while(true) {
@@ -215,14 +217,19 @@ void updateAddress() {
 		}
 	}
 
-	searchForAndReturnNodeAlias(strtok(aliasBuffer,"\n"));
+	node = searchForAndReturnNodeAlias(strtok(aliasBuffer,"\n"));
+	printf("Found node %s, with address %d.%d.%d.%d\n",node -> alias, node -> octet1, node -> octet2, node -> octet3, node -> octet4);
+	printf("Enter address to replace: \n");
+	//USE DISPLAY ADDRESSES TO GET INDIVIDUAL OCTETS
+
 }
 
+//REGEX AND GET NODE BEFORE ALIAS NODE FOR 'NEXT' POINTER MANIPULATION
 void deleteAddress() {
 
 }
 
-//Prints list
+//Prints list 
 void displayList() {
 	struct addressListNode* curr = head;
 	
@@ -233,16 +240,16 @@ void displayList() {
 	printf("Alias: %s, Address: %d.%d.%d.%d\n", curr -> alias, curr -> octet1, curr -> octet2, curr -> octet3, curr -> octet4);
 }
 
-//FUCKED Up
+//Prompts user for address location and displays corresponding aliases
 void displayAddresses() {
-	char octetBuffer[4];
+	char octetBuffer[5];
 	int octet1;
 	int octet2;
 
 	while(true) {
 		printf("Enter the first octet: \n");
-		fgets(octetBuffer, 4, stdin);
-
+		fgets(octetBuffer, 5, stdin);
+		printf("input was %s, length of %d\n", octetBuffer, (int) strlen(octetBuffer));
 		//Fgets input formatting check
 		if(strlen(octetBuffer) < 2 || strlen(octetBuffer) > 4 || strchr(octetBuffer, '\n') == NULL) {
 			printf("Enter a number that corresponds to the format.\n");
@@ -250,6 +257,10 @@ void displayAddresses() {
 				int c;
 				while((c = fgetc(stdin)) != '\n' && c != EOF);
 			}
+			continue;
+		}
+		else if(atoi(strtok(octetBuffer,"\n")) > 255 || atoi(strtok(octetBuffer,"\n")) < 0) {
+			printf("Enter a number between 0 and 255.\n");
 			continue;
 		}
 		else {
@@ -260,7 +271,7 @@ void displayAddresses() {
 
 	while(true) {
 		printf("Enter the second octet: \n");
-		fgets(octetBuffer, 4, stdin);
+		fgets(octetBuffer, 5, stdin);
 
 		//Fgets input formatting check
 		if(strlen(octetBuffer) < 2 || strlen(octetBuffer) > 4 || strchr(octetBuffer, '\n') == NULL) {
@@ -272,6 +283,7 @@ void displayAddresses() {
 			continue;
 		}
 		else if(atoi(strtok(octetBuffer,"\n")) > 255 || atoi(strtok(octetBuffer,"\n")) < 0) {
+			printf("Enter a number between 0 and 255");
 			continue;
 		}
 		else {
@@ -280,6 +292,24 @@ void displayAddresses() {
 		}
 	}
 
+	//Search for address
+	struct addressListNode* curr = head;
+	bool existsFlag = false;
+	while(curr -> next != NULL) {
+		if(curr -> octet1 == octet1 && curr -> octet2 == octet2) {
+			existsFlag = true;
+			printf("Match found, alias: %s\n", curr -> alias);
+		}
+		curr = curr -> next;
+	}
+	if(curr -> octet1 == octet1 && curr -> octet2 == octet2) {
+		existsFlag = true;
+		printf("Match found, alias: %s\n", curr -> alias);
+	}
+	if(existsFlag) {
+		return;
+	}
+	printf("No matches for address location found.\n");
 
 }
 
@@ -365,7 +395,7 @@ int main() {
 				lookUpAddress();
 				break;
 			case 3:
-				printf("3 lol\n");
+				updateAddress();
 				break;
 			case 4:
 				printf("4 lol\n");
