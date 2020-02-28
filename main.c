@@ -132,15 +132,16 @@ void lookUpAddress() {
 	}
 }
 
-//THIS ONES FUCKED UP, NEED TO IMPLEMENT REGEX CHECK
+//Adds an alias/address combination to the ltst based on user input
 void addAddress() {
 	char aliasBuffer[12];
 	char addressBuffer[16];
-	regex_t regex;
-	int reti;
-
-	reti = regcomp(&regex, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", 0);
-
+	char octetBuffer[5];
+	int octet1;
+	int octet2;
+	int octet3;
+	int octet4;
+	
 	//Get alias
 	while(true) {
 		printf("Enter the alias for lookup: \n");
@@ -160,39 +161,112 @@ void addAddress() {
 		}
 	}
 
-	//Get address,  USE DISPLAY ADDRESSES TO GRAB OCTETS
 	while(true) {
-		printf("Enter the address for lookup: \n");
-		fgets(addressBuffer, 16, stdin);
-
+		printf("Enter the first octet: \n");
+		fgets(octetBuffer, 5, stdin);
+		printf("input was %s, length of %d\n", octetBuffer, (int) strlen(octetBuffer));
 		//Fgets input formatting check
-		reti = regexec(&regex, addressBuffer, 0, NULL, 0);
-		if(reti == REG_NOMATCH || strlen(addressBuffer) < 2 || strlen(addressBuffer) > 11 || strchr(addressBuffer, '\n') == NULL) {
-			printf("Enter a number that corresponds the address format.\n");
-			if(strchr(addressBuffer, '\n') == NULL) {
+		if(strlen(octetBuffer) < 2 || strlen(octetBuffer) > 4 || strchr(octetBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds to the format.\n");
+			if(strchr(octetBuffer, '\n') == NULL) {
 				int c;
 				while((c = fgetc(stdin)) != '\n' && c != EOF);
 			}
 			continue;
 		}
+		else if(atoi(strtok(octetBuffer,"\n")) > 255 || atoi(strtok(octetBuffer,"\n")) < 0) {
+			printf("Enter a number between 0 and 255.\n");
+			continue;
+		}
 		else {
+			octet1 = atoi(strtok(octetBuffer,"\n"));
 			break;
 		}
 	}
-		//sscanf(lineBuffer, "%s %s", addressBuffer, aliasBuffer);
 
-	struct addressListNode* node1 = searchForAndReturnNodeAlias("jet2");
-	struct addressListNode* node2 = searchForAndReturnNodeAddress(131,251,95,221);
+	while(true) {
+		printf("Enter the second octet: \n");
+		fgets(octetBuffer, 5, stdin);
+		printf("input was %s, length of %d\n", octetBuffer, (int) strlen(octetBuffer));
+		//Fgets input formatting check
+		if(strlen(octetBuffer) < 2 || strlen(octetBuffer) > 4 || strchr(octetBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds to the format.\n");
+			if(strchr(octetBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else if(atoi(strtok(octetBuffer,"\n")) > 255 || atoi(strtok(octetBuffer,"\n")) < 0) {
+			printf("Enter a number between 0 and 255.\n");
+			continue;
+		}
+		else {
+			octet2 = atoi(strtok(octetBuffer,"\n"));
+			break;
+		}
+	}
+
+	while(true) {
+		printf("Enter the third octet: \n");
+		fgets(octetBuffer, 5, stdin);
+		printf("input was %s, length of %d\n", octetBuffer, (int) strlen(octetBuffer));
+		//Fgets input formatting check
+		if(strlen(octetBuffer) < 2 || strlen(octetBuffer) > 4 || strchr(octetBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds to the format.\n");
+			if(strchr(octetBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else if(atoi(strtok(octetBuffer,"\n")) > 255 || atoi(strtok(octetBuffer,"\n")) < 0) {
+			printf("Enter a number between 0 and 255.\n");
+			continue;
+		}
+		else {
+			octet3 = atoi(strtok(octetBuffer,"\n"));
+			break;
+		}
+	}
+
+	while(true) {
+		printf("Enter the fourth octet: \n");
+		fgets(octetBuffer, 5, stdin);
+		printf("input was %s, length of %d\n", octetBuffer, (int) strlen(octetBuffer));
+		//Fgets input formatting check
+		if(strlen(octetBuffer) < 2 || strlen(octetBuffer) > 4 || strchr(octetBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds to the format.\n");
+			if(strchr(octetBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else if(atoi(strtok(octetBuffer,"\n")) > 255 || atoi(strtok(octetBuffer,"\n")) < 0) {
+			printf("Enter a number between 0 and 255.\n");
+			continue;
+		}
+		else {
+			octet4 = atoi(strtok(octetBuffer,"\n"));
+			break;
+		}
+	}
+	printf("octets entered are %d %d %d %d\n", octet1, octet2, octet3, octet4);
+
+	struct addressListNode* node1 = searchForAndReturnNodeAlias(strtok(aliasBuffer,"\n"));
+	struct addressListNode* node2 = searchForAndReturnNodeAddress(octet1,octet2,octet3,octet4);
 	if(node1 == NULL && node2 == NULL) {
-		struct addressListNode* newNode = addressListNodeConstructor("111.111.111.111", "test");
+		sprintf(addressBuffer, "%d.%d.%d.%d", octet1, octet2, octet3, octet4);
+		struct addressListNode* newNode = addressListNodeConstructor(addressBuffer, strtok(aliasBuffer,"\n"));
 		newNode -> next = head;
 		head = newNode;
+		printf("Node added.\n");
 	}
 	else {
 		printf("Value already exists within address list.\n");
 	}
 }
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 //Update address of a user-specified alias 
 void updateAddress() {
