@@ -30,7 +30,7 @@ struct addressListNode* addressListNodeConstructor(char* address, char* alias) {
 
 void displayMenu() {
 	printf("Select menu option: \n");
-	printf("1) Add Address TODO\n"); 
+	printf("1) Add Address DONE\n"); 
 	printf("2) Look up Address DONE\n");
 	printf("3) Update Address DONE\n");
 	printf("4) Delete Address TODO\n");
@@ -406,6 +406,46 @@ void updateAddress() {
 
 //REGEX AND GET NODE BEFORE ALIAS NODE FOR 'NEXT' POINTER MANIPULATION
 void deleteAddress() {
+	char aliasBuffer[12];
+	struct addressListNode* node;
+	struct addressListNode* curr;
+
+	while(true) {
+		printf("Enter the deletion for lookup: \n");
+		fgets(aliasBuffer, 12, stdin);
+
+		//Fgets input formatting check
+		if(strlen(aliasBuffer) < 2 || strlen(aliasBuffer) > 11 || strchr(aliasBuffer, '\n') == NULL) {
+			printf("Enter a string that corresponds to the format.\n");
+			if(strchr(aliasBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else {
+			break;
+		}
+	}
+
+	node = searchForAndReturnNodeAlias(strtok(aliasBuffer, "\n"));
+	if(node != NULL) {
+		if(node == head) {
+			head = node -> next;
+			free(node);
+		}
+		else {
+			while(curr -> next != NULL) {
+				printf("Alias: %s, Address: %d.%d.%d.%d\n", curr -> alias, curr -> octet1, curr -> octet2, curr -> octet3, curr -> octet4);
+				curr = curr -> next;
+			}
+			printf("Alias: %s, Address: %d.%d.%d.%d\n", curr -> alias, curr -> octet1, curr -> octet2, curr -> octet3, curr -> octet4);
+		}
+	}
+	else {
+		printf("Alias not found.\n");
+	}
+
 
 }
 
