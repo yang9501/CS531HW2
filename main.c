@@ -11,7 +11,7 @@ G01135050
 #include <regex.h>
 
 struct addressListNode {
-	char alias[11];
+	char alias[12];
 	int octet1, octet2, octet3, octet4;
 	struct addressListNode *next;
 };
@@ -44,7 +44,7 @@ void displayMenu() {
 void parseAddressFile() {
 	char lineBuffer[100];
 	char addressBuffer[20];
-	char aliasBuffer[11];
+	char aliasBuffer[12];
 	bool firstNode = true;
 
 	FILE *fp = fopen("CS531_Inet.txt", "r");
@@ -103,11 +103,11 @@ struct addressListNode *searchForAndReturnNodeAddress(int octet1, int octet2, in
 
 //Retreives user inputted alias and displays address if it exists in the list
 void lookUpAddress() {
-	char aliasBuffer[11];
+	char aliasBuffer[12];
 
 	while(true) {
 		printf("Enter the alias for lookup: \n");
-		fgets(aliasBuffer, 11, stdin);
+		fgets(aliasBuffer, 12, stdin);
 
 		//Fgets input formatting check
 		if(strlen(aliasBuffer) < 2 || strlen(aliasBuffer) > 11 || strchr(aliasBuffer, '\n') == NULL) {
@@ -134,7 +134,7 @@ void lookUpAddress() {
 
 //THIS ONES FUCKED UP, NEED TO IMPLEMENT REGEX CHECK
 void addAddress() {
-	char aliasBuffer[11];
+	char aliasBuffer[12];
 	char addressBuffer[16];
 	regex_t regex;
 	int reti;
@@ -144,7 +144,7 @@ void addAddress() {
 	//Get alias
 	while(true) {
 		printf("Enter the alias for lookup: \n");
-		fgets(aliasBuffer, 11, stdin);
+		fgets(aliasBuffer, 12, stdin);
 
 		//Fgets input formatting check
 		if(strlen(aliasBuffer) < 2 || strlen(aliasBuffer) > 11 || strchr(aliasBuffer, '\n') == NULL) {
@@ -197,11 +197,11 @@ void addAddress() {
 //THIS ONES FUCKED UP,  
 void updateAddress() {
 	struct addressListNode* node;
-	char aliasBuffer[11];
+	char aliasBuffer[12];
 
 	while(true) {
 		printf("Enter the alias for lookup: \n");
-		fgets(aliasBuffer, 11, stdin);
+		fgets(aliasBuffer, 12, stdin);
 
 		//Fgets input formatting check
 		if(strlen(aliasBuffer) < 2 || strlen(aliasBuffer) > 11 || strchr(aliasBuffer, '\n') == NULL) {
@@ -321,7 +321,7 @@ void saveToFile() {
 	//Prompt user for filename, check for illegal characters
 	while(true) {	
 		printf("Enter the filename to save: \n");
-		fgets(nameBuffer, 11, stdin);
+		fgets(nameBuffer, 101, stdin);
 
 		//Fgets input formatting check
 		if(strlen(nameBuffer) < 2 || strlen(nameBuffer) > 97 || strchr(nameBuffer, '\n') == NULL || strchr(nameBuffer, '/') != NULL) {
