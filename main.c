@@ -32,7 +32,7 @@ void displayMenu() {
 	printf("Select menu option: \n");
 	printf("1) Add Address TODO\n"); 
 	printf("2) Look up Address DONE\n");
-	printf("3) Update Address TODO\n");
+	printf("3) Update Address DONE\n");
 	printf("4) Delete Address TODO\n");
 	printf("5) Display list DONE\n");
 	printf("6) Display addresses for location DONE\n");
@@ -194,7 +194,7 @@ void addAddress() {
 }
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-//THIS ONES FUCKED UP,  
+//Update address of a user-specified alias 
 void updateAddress() {
 	struct addressListNode* node;
 	char aliasBuffer[12];
@@ -218,10 +218,116 @@ void updateAddress() {
 	}
 
 	node = searchForAndReturnNodeAlias(strtok(aliasBuffer,"\n"));
+	if(node == NULL) {
+		printf("Alias not found.\n");
+		return;
+	}
 	printf("Found node %s, with address %d.%d.%d.%d\n",node -> alias, node -> octet1, node -> octet2, node -> octet3, node -> octet4);
 	printf("Enter address to replace: \n");
-	//USE DISPLAY ADDRESSES TO GET INDIVIDUAL OCTETS
+	//Retreive octets from user
+	char octetBuffer[5];
+	int octet1;
+	int octet2;
+	int octet3;
+	int octet4;
 
+	while(true) {
+		printf("Enter the first octet: \n");
+		fgets(octetBuffer, 5, stdin);
+		printf("input was %s, length of %d\n", octetBuffer, (int) strlen(octetBuffer));
+		//Fgets input formatting check
+		if(strlen(octetBuffer) < 2 || strlen(octetBuffer) > 4 || strchr(octetBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds to the format.\n");
+			if(strchr(octetBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else if(atoi(strtok(octetBuffer,"\n")) > 255 || atoi(strtok(octetBuffer,"\n")) < 0) {
+			printf("Enter a number between 0 and 255.\n");
+			continue;
+		}
+		else {
+			octet1 = atoi(strtok(octetBuffer,"\n"));
+			break;
+		}
+	}
+
+	while(true) {
+		printf("Enter the second octet: \n");
+		fgets(octetBuffer, 5, stdin);
+		printf("input was %s, length of %d\n", octetBuffer, (int) strlen(octetBuffer));
+		//Fgets input formatting check
+		if(strlen(octetBuffer) < 2 || strlen(octetBuffer) > 4 || strchr(octetBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds to the format.\n");
+			if(strchr(octetBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else if(atoi(strtok(octetBuffer,"\n")) > 255 || atoi(strtok(octetBuffer,"\n")) < 0) {
+			printf("Enter a number between 0 and 255.\n");
+			continue;
+		}
+		else {
+			octet2 = atoi(strtok(octetBuffer,"\n"));
+			break;
+		}
+	}
+
+	while(true) {
+		printf("Enter the third octet: \n");
+		fgets(octetBuffer, 5, stdin);
+		printf("input was %s, length of %d\n", octetBuffer, (int) strlen(octetBuffer));
+		//Fgets input formatting check
+		if(strlen(octetBuffer) < 2 || strlen(octetBuffer) > 4 || strchr(octetBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds to the format.\n");
+			if(strchr(octetBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else if(atoi(strtok(octetBuffer,"\n")) > 255 || atoi(strtok(octetBuffer,"\n")) < 0) {
+			printf("Enter a number between 0 and 255.\n");
+			continue;
+		}
+		else {
+			octet3 = atoi(strtok(octetBuffer,"\n"));
+			break;
+		}
+	}
+
+	while(true) {
+		printf("Enter the fourth octet: \n");
+		fgets(octetBuffer, 5, stdin);
+		printf("input was %s, length of %d\n", octetBuffer, (int) strlen(octetBuffer));
+		//Fgets input formatting check
+		if(strlen(octetBuffer) < 2 || strlen(octetBuffer) > 4 || strchr(octetBuffer, '\n') == NULL) {
+			printf("Enter a number that corresponds to the format.\n");
+			if(strchr(octetBuffer, '\n') == NULL) {
+				int c;
+				while((c = fgetc(stdin)) != '\n' && c != EOF);
+			}
+			continue;
+		}
+		else if(atoi(strtok(octetBuffer,"\n")) > 255 || atoi(strtok(octetBuffer,"\n")) < 0) {
+			printf("Enter a number between 0 and 255.\n");
+			continue;
+		}
+		else {
+			octet4 = atoi(strtok(octetBuffer,"\n"));
+			break;
+		}
+	}
+	printf("octets entered are %d %d %d %d\n", octet1, octet2, octet3, octet4);
+	node -> octet1 = octet1;
+	node -> octet2 = octet2;
+	node -> octet3 = octet3;
+	node -> octet4 = octet4;
+	printf("Address of node with alias: %s has been modified to %d.%d.%d.%d\n", node -> alias, node -> octet1, node -> octet2, node -> octet3, node -> octet4);
 }
 
 //REGEX AND GET NODE BEFORE ALIAS NODE FOR 'NEXT' POINTER MANIPULATION
