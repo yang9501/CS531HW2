@@ -30,13 +30,13 @@ struct addressListNode* addressListNodeConstructor(char* address, char* alias) {
 
 void displayMenu() {
 	printf("Select menu option: \n");
-	printf("1) Add Address DONE\n"); 
-	printf("2) Look up Address DONE\n");
-	printf("3) Update Address DONE\n");
-	printf("4) Delete Address TODO\n");
-	printf("5) Display list DONE\n");
-	printf("6) Display addresses for location DONE\n");
-	printf("7) Save to file DONE\n");
+	printf("1) Add Address\n"); 
+	printf("2) Look up Address\n");
+	printf("3) Update Address\n");
+	printf("4) Delete Address\n");
+	printf("5) Display list\n");
+	printf("6) Display addresses for location\n");
+	printf("7) Save to file\n");
 	printf("8) Quit\n");
 }
 
@@ -404,7 +404,7 @@ void updateAddress() {
 	printf("Address of node with alias: %s has been modified to %d.%d.%d.%d\n", node -> alias, node -> octet1, node -> octet2, node -> octet3, node -> octet4);
 }
 
-//REGEX AND GET NODE BEFORE ALIAS NODE FOR 'NEXT' POINTER MANIPULATION
+//Deletes a node with user specified alias
 void deleteAddress() {
 	char aliasBuffer[12];
 	struct addressListNode* node;
@@ -433,13 +433,34 @@ void deleteAddress() {
 		if(node == head) {
 			head = node -> next;
 			free(node);
+			printf("Address deleted.\n");
+			return;
 		}
 		else {
-			while(curr -> next != NULL) {
-				printf("Alias: %s, Address: %d.%d.%d.%d\n", curr -> alias, curr -> octet1, curr -> octet2, curr -> octet3, curr -> octet4);
-				curr = curr -> next;
+			struct addressListNode * temp = node -> next;
+			if(temp != NULL) {
+				node -> octet1 = temp -> octet1;
+				node -> octet2 = temp -> octet2;
+				node -> octet3 = temp -> octet3;
+				node -> octet4 = temp -> octet4;
+				strcpy(node -> alias, temp -> alias);
+				node -> next = temp -> next;
+				printf("Address deleted.\n");
+				free(temp);
 			}
-			printf("Alias: %s, Address: %d.%d.%d.%d\n", curr -> alias, curr -> octet1, curr -> octet2, curr -> octet3, curr -> octet4);
+			else { //Node to delete is the tail
+				struct addressListNode * curr = head;
+				while(curr -> next != NULL) {
+					if(curr -> next == node) {
+						curr -> next = NULL;
+						tail = curr;
+						printf("Address deleted.\n");
+						free(node);
+						break;
+					}
+					curr = curr -> next;
+				}
+			}
 		}
 	}
 	else {
@@ -618,7 +639,7 @@ int main() {
 				updateAddress();
 				break;
 			case 4:
-				printf("4 lol\n");
+				deleteAddress();
 				break;
 			case 5:
 				displayList();
